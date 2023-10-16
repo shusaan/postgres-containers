@@ -28,7 +28,7 @@ LABEL org.opencontainers.image.description="This Docker image contains PostgreSQ
 
 COPY requirements.txt /
 
-# Install timescaledb 2.x
+# Install timescaledb 2.x Extension
 RUN apt-get update \
     && apt-get install -y lsb-release wget \
     && echo "deb https://packagecloud.io/timescale/timescaledb/debian/ $(lsb_release -c -s) main" | tee /etc/apt/sources.list.d/timescaledb.list \
