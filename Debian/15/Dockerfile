@@ -17,7 +17,7 @@
 FROM postgres:15.4-bullseye
 
 # Do not split the description, otherwise we will see a blank space in the labels
-LABEL name="PostgreSQL Container Images" \
+LABEL name="PostgreSQL Container Images + TimescaleDB" \
       vendor="The CloudNativePG Contributors" \
       version="${PG_VERSION}" \
       release="16" \
@@ -27,6 +27,17 @@ LABEL name="PostgreSQL Container Images" \
 LABEL org.opencontainers.image.description="This Docker image contains PostgreSQL and Barman Cloud based on Postgres 15.4-bullseye."
 
 COPY requirements.txt /
+
+# Install timescaledb 2.x
+RUN apt-get update \
+    && apt-get install -y lsb-release wget \
+    && echo "deb https://packagecloud.io/timescale/timescaledb/debian/ $(lsb_release -c -s) main" | tee /etc/apt/sources.list.d/timescaledb.list \
+    && wget --quiet -O - https://packagecloud.io/timescale/timescaledb/gpgkey | apt-key add - \
+    && apt-get update \
+    && apt-get install -y "timescaledb-2-postgresql-${PG_MAJOR}" \
+    && apt-get remove -y lsb-release wget \
+    && 	rm -fr /tmp/* \
+    && 	rm -rf /var/lib/apt/lists/*
 
 # Install additional extensions
 RUN set -xe; \
